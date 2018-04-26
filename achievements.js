@@ -1,88 +1,20 @@
 const { viewerEvents, streamEvents } = require('deetzlabs');
 
-const isCommand = (command, message) =>
-  message.trim().toLowerCase() === command ||
-  message.trim().toLowerCase().startsWith(`${command} `);
-
-const ONE_HUNDRED_DAYS = 100 * 24 * 60 * 60 * 1000;
-
 const isViewerEvent = event => event.aggregate === 'viewer';
-
 const isStreamEvent = event => event.aggregate === 'stream';
 
-const messageCounter = (numberToReach, condition, achievement) =>
-  (state = { distribute: false, count: 0 }, event) => {
-    if (isViewerEvent(event)
-      && event.type === viewerEvents.sentChatMessage
-      && condition(event.message)) {
-      return {
-        count: state.count + 1,
-        distribute: state.count + 1 >= numberToReach,
-      };
-    }
-    if (isViewerEvent(event) && event.type === viewerEvents.migratedData && event[achievement]) {
-      return {
-        count: state.count + event[achievement],
-        distribute: false,
-      };
-    }
-    return {
-      ...state,
-      distribute: false,
-    };
-  };
-
-const nopeReducer = () => ({ distribute: false });
-
 module.exports = {
+  // Dont delete this, its used by the "test achievement" button
   testing: {
-    name: 'Testeuse',
-    text: '%USER% bidouille des trucs',
-    reducer: nopeReducer,
+    name: 'Testing',
+    text: 'The admin is testing things',
+    reducer: () => ({ distribute: false }),
   },
-  gravedigger: {
-    name: 'Fossoyeuse',
-    text: '%USER% est un peu sadique...',
-    reducer: messageCounter(5, message => isCommand('!rip', message), 'gravedigger'),
-  },
-  entertainer: {
-    name: 'Ambianceuse',
-    text: 'Bim plein de messages dans le chat, gg %USER%',
-    reducer: messageCounter(300, () => true, 'entertainer'),
-  },
-  swedish: {
-    name: 'Suédois LV1',
-    text: 'Hej %USER% !',
-    reducer: messageCounter(1, message => isCommand('hej', message), 'swedish'),
-  },
-  cheerleader: {
-    name: 'Pom-pom girl',
-    text: 'Merci pour tes encouragements %USER% !',
-    reducer: messageCounter(5, message => isCommand('!gg', message), 'cheerleader'),
-  },
-  berzingue: {
-    name: 'Berzingos',
-    text: '%USER% dépasse le mur du son !',
-    reducer: messageCounter(5, message => isCommand('!berzingue', message), 'berzingue'),
-  },
-  careful: {
-    name: 'Prudente',
-    text: '%USER% nous montre la voie de la sagesse',
-    reducer: messageCounter(5, message => isCommand('!heal', message) || isCommand('!save', message), 'careful'),
-  },
-  vigilante: {
-    name: 'Vigilance constante',
-    text: '%USER% ne laisse rien passer !',
-    reducer: messageCounter(5, message => isCommand('!putain', message), 'vigilante'),
-  },
-  pyromaniac: {
-    name: 'Pyromane',
-    text: '%USER% allume le feu',
-    reducer: messageCounter(5, message => isCommand('!fire', message), 'pyromaniac'),
-  },
+
+  // An achievement for everyone who gives money
   benefactor: {
-    name: 'Mécène',
-    text: 'Cool ! Merci pour ton soutien %USER%',
+    name: 'Benefactor',
+    text: 'Thanks for your support %USER%',
     reducer: (state, event) => {
       if (isViewerEvent(event) && (
         event.type === viewerEvents.subscribed
@@ -93,24 +25,11 @@ module.exports = {
       return { distribute: false };
     },
   },
-  hallowinneuse: {
-    name: 'Hallowinneuse',
-    text: '%USER% a l\'oreille absolue !',
-    reducer: nopeReducer,
-  },
-  despacitrouille: {
-    name: 'Despacitrouille',
-    text: '%USER% connaît ses classiques !',
-    reducer: nopeReducer,
-  },
-  hercule_poirette: {
-    name: 'Hercule Poirette',
-    text: '%USER% mène l\'enquête !',
-    reducer: nopeReducer,
-  },
-  host: {
-    name: 'Hospitalière',
-    text: '%USER% nous accueille sur sa chaîne !',
+
+  // An achievement for everyone who hosts the channel
+  advertiser: {
+    name: 'Advertiser',
+    text: '%USER% helps us to become celebrities',
     reducer: (state, event) => {
       if (isViewerEvent(event) && event.type === viewerEvents.hosted) {
         return { distribute: true };
@@ -118,33 +37,28 @@ module.exports = {
       return { distribute: false };
     },
   },
-  elder: {
-    name: 'Doyenne',
-    text: 'Bienvenue parmi les anciennes, %USER%',
-    reducer: (state = { distribute: false, oldestMessage: null }, event) => {
-      if (!state.oldestMessage && isViewerEvent(event)
-        && event.type === viewerEvents.sentChatMessage) {
+
+  // An achievement for everyone who says gg at least 5 times
+  supporter: {
+    name: 'Supporter',
+    text: '%USER% is a real cheerleader',
+    reducer: (state = { distribute: false, count: 0 }, event) => {
+      if (isViewerEvent(event)
+      && event.type === viewerEvents.sentChatMessage
+      && event.message.trim().toLowerCase() === 'gg') {
         return {
-          distribute: false,
-          oldestMessage: event.insertDate,
+          count: state.count + 1,
+          distribute: state.count + 1 >= 5,
         };
       }
-      if (isViewerEvent(event) && event.type === viewerEvents.sentChatMessage
-        && (new Date(event.insertDate) - new Date(state.oldestMessage) > ONE_HUNDRED_DAYS)) {
-        return {
-          ...state,
-          distribute: true,
-        };
-      }
-      return {
-        ...state,
-        distribute: false,
-      };
+      return { ...state, distribute: false };
     },
   },
+
+  // Complex example here: an achievement for someone who is present 3 streams in a row
   assiduous: {
-    name: 'Assidue',
-    text: '%USER% est fidèle au poste',
+    name: 'Assiduous',
+    text: '%USER% don\'t let us down',
     reducer: (state = {
       distribute: false, streak: 0, broadcasting: false, wasHere: false,
     }, event) => {
