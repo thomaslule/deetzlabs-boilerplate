@@ -1,10 +1,12 @@
-const Deetzlabs = require('deetzlabs').default;
+const Deetzlabs = require('deetzlabs');
 const config = require('./config');
 const achievements = require('./achievements');
 
+let deetzlabs;
+
 const start = async () => {
   try {
-    const deetzlabs = Deetzlabs({
+    deetzlabs = Deetzlabs({
       ...config,
       achievements,
       widgets_folder: `${__dirname}/widgets`,
@@ -17,3 +19,19 @@ const start = async () => {
 };
 
 start();
+
+const stop = async () => {
+  try {
+    await Promise.race([
+      deetzlabs.stop(),
+      new Promise((resolve, reject) => setTimeout(reject, 3000)),
+    ]);
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
+process.on('SIGINT', stop);
+process.on('SIGTERM', stop);

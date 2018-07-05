@@ -1,8 +1,3 @@
-const { viewerEvents, streamEvents } = require('deetzlabs');
-
-const isViewerEvent = event => event.aggregate === 'viewer';
-const isStreamEvent = event => event.aggregate === 'stream';
-
 module.exports = {
   // Dont delete this, its used by the "test achievement" button
   testing: {
@@ -16,10 +11,11 @@ module.exports = {
     name: 'Benefactor',
     text: 'Thanks for your support %USER%',
     reducer: (state, event) => {
-      if (isViewerEvent(event) && (
-        event.type === viewerEvents.subscribed
-        || event.type === viewerEvents.cheered
-        || event.type === viewerEvents.donated)) {
+      if (event.aggregate === 'viewer' && (
+        event.type === 'subscribed'
+        || event.type === 'gave-sub'
+        || event.type === 'cheered'
+        || event.type === 'donated')) {
         return { distribute: true };
       }
       return { distribute: false };
@@ -31,7 +27,7 @@ module.exports = {
     name: 'Advertiser',
     text: '%USER% helps us to become celebrities',
     reducer: (state, event) => {
-      if (isViewerEvent(event) && event.type === viewerEvents.hosted) {
+      if (event.aggregate === 'viewer' && (event.type === 'hosted' || event.type === 'raided')) {
         return { distribute: true };
       }
       return { distribute: false };
@@ -43,8 +39,8 @@ module.exports = {
     name: 'Supporter',
     text: '%USER% is a real cheerleader',
     reducer: (state = { distribute: false, count: 0 }, event) => {
-      if (isViewerEvent(event)
-      && event.type === viewerEvents.sentChatMessage
+      if (event.aggregate === 'viewer'
+      && event.type === 'sent-chat-message'
       && event.message.trim().toLowerCase() === 'gg') {
         return {
           count: state.count + 1,
@@ -62,7 +58,7 @@ module.exports = {
     reducer: (state = {
       distribute: false, streak: 0, broadcasting: false, wasHere: false,
     }, event) => {
-      if (isStreamEvent(event) && event.type === streamEvents.begun) {
+      if (event.aggregate === 'stream' && event.type === 'begun') {
         return {
           ...state,
           distribute: false,
@@ -70,7 +66,7 @@ module.exports = {
           broadcasting: true,
         };
       }
-      if (isStreamEvent(event) && event.type === streamEvents.ended) {
+      if (event.aggregate === 'stream' && event.type === 'ended') {
         return {
           ...state,
           distribute: false,
@@ -78,8 +74,8 @@ module.exports = {
           streak: state.wasHere ? state.streak + 1 : 0,
         };
       }
-      if (isViewerEvent(event)
-        && event.type === viewerEvents.sentChatMessage
+      if (event.aggregate === 'viewer'
+        && event.type === 'sent-chat-message'
         && state.broadcasting) {
         return {
           ...state,

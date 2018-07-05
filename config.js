@@ -7,19 +7,17 @@ module.exports = {
   streamer_token: '', // create your token here https://twitchapps.com/tmi/
   bot_name: '', // twitch bot login
   bot_token: '', // create your token here https://twitchapps.com/tmi/
+  streamlabs_socket_token: '', // get yours here https://streamlabs.com/dashboard#/apisettings in API TOKENS then "your socket API token"
+  self_url: '', // url to your app
   secret: '', // any random string
-  commands: {
-    // the command to see your own achievements
-    achievements: {
-      command: '!achievements',
-      answer: 'Congratulations %USER%\ for your achievements: %ACHIEVEMENTS%',
-      answer_none: '%USER% doesn\'t have any achievement but their time will come!',
-    },
-    // the command to list the bot's commands
-    commands: {
-      command: '!commands',
-      answer: 'Say !achievements to see your current achievements',
-    },
+  achievements_command: { // the command to see your own achievements
+    isCommand: message => message === '!achievements',
+    answer: 'Congratulations %USER% for your achievements: %ACHIEVEMENTS%',
+    answer_none: '%USER% doesn\'t have any achievement but their time will come!',
+  },
+  commands_command: { // the command to list the bot's commands
+    isCommand: message => message === '!commands',
+    answer: 'Say !achievements to see your current achievements',
   },
   logins: {
     // key-value username => password
