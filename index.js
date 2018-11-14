@@ -1,16 +1,11 @@
-const Deetzlabs = require('deetzlabs');
+const { Deetzlabs } = require('deetzlabs');
 const config = require('./config');
-const achievements = require('./achievements');
 
 let deetzlabs;
 
 const start = async () => {
   try {
-    deetzlabs = Deetzlabs({
-      ...config,
-      achievements,
-      widgets_folder: `${__dirname}/widgets`,
-    });
+    deetzlabs = new Deetzlabs(config);
     await deetzlabs.start();
   } catch (error) {
     console.error(error);
