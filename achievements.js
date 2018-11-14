@@ -34,12 +34,15 @@ module.exports = {
     supporter: {
       name: 'Supporter',
       text: '%USER% is a real cheerleader',
-      reducer: (count = 0, event) => {
+      // reducer will run on each event to let you store a state for this achievement
+      // first arg is the previous state, 2nd arg is the event, it must return the new state
+      reducer: (state = 0, event) => {
         if (event.type === 'sent-chat-message' && event.message.gg /* see messageToObject above */) {
-          return count + 1;
+          return state + 1;
         }
-        return count;
+        return state;
       },
+      // here, we use the state that we calculated from the viewer's events
       distributeWhen: (state, event) => event.type === 'sent-chat-message' && event.message.gg && state >= 5,
     },
 
