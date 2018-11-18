@@ -25,7 +25,7 @@ You can now access those urls:
 
 - `http://localhost:3100/admin` the admin interface
 - `http://localhost:3100/widgets/credits` the credits screen
-- `http://localhost:3100/widgets/achievement` the achievement alert
+- `http://localhost:3100/widgets/achievement` the achievement alert (credits due to Gus Alaniz https://codepen.io/madebygus/)
 - `http://localhost:3100/widgets/followers_goal` a followers goal (I added this because streamlabs didnt work correctly)
 
 (add the widgets to your stream using your stream software, for example with OBS add a "browser source" and enter the url)
