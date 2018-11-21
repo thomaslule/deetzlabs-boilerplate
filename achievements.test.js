@@ -15,7 +15,7 @@ describe('achievements', () => {
     });
 
     test('it should be distributed on donation', async () => {
-      await viewer.cheer(100, 'Cheer100 !');
+      await viewer.donate(20);
       expect(viewer.hasAchievement('benefactor')).toBeTruthy();
     });
 
