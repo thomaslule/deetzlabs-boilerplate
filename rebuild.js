@@ -3,7 +3,10 @@ const config = require('./config');
 
 const start = async () => {
   try {
-    const deetzlabs = new Deetzlabs(config);
+    const deetzlabs = new Deetzlabs({
+      ...config,
+      log_to_console: true,
+    });
     await deetzlabs.rebuild();
   } catch (error) {
     console.error(error);

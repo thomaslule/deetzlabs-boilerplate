@@ -4,7 +4,7 @@ const commands = require('./commands');
 
 module.exports = {
   ...secretConfig,
-  log_to_console: true,
+  log_to_console: false,
   log_to_file: true,
   widgets_folder: `${__dirname}/widgets`,
   commands: commands.commands,
