@@ -20,17 +20,17 @@ describe('achievements', () => {
     });
 
     test('it should be distributed on subscribe', async () => {
-      await viewer.subscribe(true, 1);
+      await viewer.subscribe('Prime');
       expect(viewer.hasAchievement('benefactor')).toBeTruthy();
     });
 
     test('it should be distributed on resub', async () => {
-      await viewer.resub(6, true, 1);
+      await viewer.resub(6, '1000');
       expect(viewer.hasAchievement('benefactor')).toBeTruthy();
     });
 
     test('it should be distributed on sub gift', async () => {
-      await viewer.giveSub('some_viewer_id', 1);
+      await viewer.giveSub('some_viewer_id', '1000');
       expect(viewer.hasAchievement('benefactor')).toBeTruthy();
     });
   });
