@@ -26,6 +26,6 @@
     "jest": "^24.8.0"
   },
   "dependencies": {
-    "deetzlabs": "^2.0.0"
+    "deetzlabs": "^2.1.0"
   }
 }
